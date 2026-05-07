@@ -156,7 +156,7 @@ namespace InCubeIntegration_BL
                 Logger.WriteLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType.Name, System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message + "\r\n\r\n" + ex.StackTrace, LoggingType.Error, LoggingFiles.InCubeLog);
             }
         }
-        public  async Task<string> TestApi()
+        public async Task<string> TestApi()
         {
             string url = "https://mezzan-ksa-einvoicing-nonprod-uc3y1hql.it-cpi026-rt.cfapps.eu10-002.hana.ondemand.com/http/getmaterial";
             string username = "S0027677936";
@@ -173,7 +173,7 @@ namespace InCubeIntegration_BL
                 if (response.IsSuccessStatusCode)
                 {
                     string result = await response.Content.ReadAsStringAsync();
-WriteMessage($"SuccessCall: The URL provided by the Mezzan was tested using the Incube Integration tool with the supplied credentials. The request was executed successfully and returned status code {(int)response.StatusCode} {response.StatusCode}. URL tested: {url}.");                    return result;
+                    WriteMessage($"SuccessCall: The URL provided by the Mezzan was tested using the Incube Integration tool with the supplied credentials. The request was executed successfully and returned status code {(int)response.StatusCode} {response.StatusCode}. URL tested: {url}."); return result;
                 }
                 else
                 {
@@ -1458,7 +1458,7 @@ CREATE TABLE {0}({1}
          CoreGeneral.Common.GeneralConfigurations.WS_UserName,
          CoreGeneral.Common.GeneralConfigurations.WS_Password,
          "GET", webHeader);
-                
+
 
                 DT = new DataTable();
                 MergeTables(ref DT, dt1);
@@ -1632,7 +1632,7 @@ CREATE TABLE {0}({1}
 
         public override void SendATMCollections() //Offload
         {
-           SendOffload();
+            SendOffload();
             SendDelivery("", "WH", false);
             SendPGI("", "WH", false);
         }
@@ -2377,7 +2377,7 @@ SELECT I.ItemCode, SUM(TD.Quantity) Quantity, PTL.Description, TD.Price*10 Price
                             //    SalesOrg = "1930",
                             SalesOrg = DivisionCode,
                             DistributionChannel = "03",
-                            Division = (DivisionCode == "1090" || DivisionCode == "1430"|| DivisionCode == "2210") ? "02" : "07",
+                            Division = (DivisionCode == "1090" || DivisionCode == "1430" || DivisionCode == "2210") ? "02" : "07",
                             SalesmanId = EmployeeCode,
                             //    InvoiceNo = TransactionID,
                             InvoiceNo = TransactionID, //exchangeSales 
@@ -2469,7 +2469,7 @@ SELECT I.ItemCode, SUM(TD.Quantity) Quantity, PTL.Description, TD.Price*10 Price
         {
             try
             {
-              
+
                 if (webHeader == null) throw (new Exception("Can't open session in API , please check the service!!"));
 
                 string salespersonFilter = "", TransactionID = "", CustomerRefOrTransactionID = "", DivisionCode = "", CustomerCode = "", EmployeeCode = "", OrderType = "", MainItem = "", OrganizationCode = "", HDiscount = "", OrderReason = "", Reference = "", CreditExceed = "";
@@ -2495,7 +2495,7 @@ SELECT I.ItemCode, SUM(TD.Quantity) Quantity, PTL.Description, TD.Price*10 Price
       ,Reference
       ,isFOC
       ,CreditExceed
-  FROM V_POST_Sales_1090_1430_2210
+  FROM V_POST_Sales
     inner join [Transaction] t on t.TransactionID= V_POST_Sales.TransactionID   inner join Division d on d.DivisionID = t.DivisionID
 	left join ConsignmentOrder co on t.TransactionID = co.OrderID 
  where 1=1 and t.TransactionTypeID <> 17 and co.OrderID is null AND t.TransactionDate >= '{0}' AND t.TransactionDate < '{1}' {2} order by t.TransactionDate asc", Filters.FromDate.ToString("yyyy-MM-dd"), Filters.ToDate.AddDays(1).ToString("yyyy-MM-dd"), salespersonFilter);
@@ -2839,7 +2839,7 @@ SELECT I.ItemCode, SUM(TD.Quantity) Quantity, PTL.Description, TD.Price*10 Price
                             DiscValue = "0.000",
                             SalesOrg = "1930",
                             DistributionChannel = "03",
-                            Division =  "07",
+                            Division = "07",
                             SalesmanId = EmployeeCode,
                             InvoiceNo = TransactionID,
                             Reference = Reference,
@@ -2949,14 +2949,14 @@ SELECT I.ItemCode, SUM(TD.Quantity) Quantity, PTL.Description, TD.Price*10 Price
                 {
                     if (IsExch == false)
                     {
-                        headerQuery = string.Format(@"SELECT Division.DivisionCode, SalesOrderRef,V_POST_SalesDelivery.EmployeeCode,OrganizationCode,V_POST_SalesDelivery.TransactionID,V_POST_SalesDelivery.TransactionTypeID  FROM	V_POST_SalesDelivery_1090_1430_2210
+                        headerQuery = string.Format(@"SELECT Division.DivisionCode, SalesOrderRef,V_POST_SalesDelivery.EmployeeCode,OrganizationCode,V_POST_SalesDelivery.TransactionID,V_POST_SalesDelivery.TransactionTypeID  FROM	V_POST_SalesDelivery
 inner join [Transaction] on V_POST_SalesDelivery.TransactionID= [Transaction].TransactionID inner join Division on Division.DivisionID = [Transaction].DivisionID  
 left join ConsignmentOrder co on [Transaction].TransactionID = co.OrderID 
 where   [Transaction].TransactionTypeID <> 17 and co.OrderID is null and convert(date,TransactionDate) >= '{0}' AND convert(date,TransactionDate) <= '{1}' {2}", Filters.FromDate.ToString("yyyy-MM-dd"), Filters.ToDate.AddDays(1).ToString("yyyy-MM-dd"), salespersonFilter);
                     }
                     else
                     {
-                        headerQuery = string.Format(@"SELECT Division.DivisionCode, SalesOrderRef,V_POST_SalesDelivery.EmployeeCode,OrganizationCode,V_POST_SalesDelivery.TransactionID,V_POST_SalesDelivery.TransactionTypeID  FROM	V_POST_SalesDelivery_1090_1430_2210
+                        headerQuery = string.Format(@"SELECT Division.DivisionCode, SalesOrderRef,V_POST_SalesDelivery.EmployeeCode,OrganizationCode,V_POST_SalesDelivery.TransactionID,V_POST_SalesDelivery.TransactionTypeID  FROM	V_POST_SalesDelivery
 inner join [Transaction] on V_POST_SalesDelivery.TransactionID= [Transaction].TransactionID inner join Division on Division.DivisionID = [Transaction].DivisionID  where [Transaction].Transactionid='{0}'   ", TransactionID);
                     }
                 }
